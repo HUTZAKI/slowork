@@ -1,9 +1,10 @@
 // app/api/jobs/add/route.js
 import { NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { connectDB } from '../../../lib/mongoose'; // or '../../../lib/mongoose' if not using alias
 import Job from '../../../models/Jobs';
 
-export async function POST(req) {
+export async function POST(req: NextRequest) {
   try {
     await connectDB();
     const body = await req.json();
@@ -16,6 +17,6 @@ export async function POST(req) {
     return NextResponse.json({ success: true, jobs }, { status: 201 });
   } catch (err) {
     console.error('[ADD MANY JOBS ERROR]', err);
-    return NextResponse.json({ success: false, message: err.message }, { status: 500 });
+    return NextResponse.json({ success: false, message: err instanceof Error ? err.message : 'Unknown error' }, { status: 500 });
   }
 }

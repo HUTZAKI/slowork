@@ -18,11 +18,15 @@ const TestbarPage = () => {
             {filteredJobs.length === 0 ? (
               <p className="text-gray-500">ยังไม่มีงานที่ตรงกับตัวกรอง</p>
             ) : (
-              filteredJobs.map((job) => (
-                <Link href={`/jobs/${job._id || job.id}`} key={job._id || job.id} className="block">
-                  <JobCard job={job} />
-                </Link>
-              ))
+              filteredJobs.map((job) => {
+                const jobData = job as { _id?: string; id?: string; [key: string]: unknown };
+                const jobId = jobData._id || jobData.id;
+                return (
+                  <Link href={`/jobs/${jobId}`} key={jobId} className="block">
+                    <JobCard job={jobData} />
+                  </Link>
+                );
+              })
             )}
           </div>
         </div>

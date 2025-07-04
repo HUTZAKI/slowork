@@ -1,14 +1,11 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import Dropdown from './Dropdown';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 
 const HeaderMain = () => {
   const router = useRouter();
-  const [selectedSearch, setSelectedSearch] = useState('');
 
   // ตัวเลือกการค้นหา
   const searchOptions = [
@@ -33,12 +30,14 @@ const HeaderMain = () => {
   ];
 
   // การจัดการเมื่อเลือกตัวเลือกค้นหา
-  const handleSearchSelect = (option) => {
-    setSelectedSearch(option.label);
+  const handleSearchSelect = (option: unknown) => {
     console.log('Selected:', option);
 
-    if (option.value) {
-      router.push(option.value);
+    if (typeof option === 'object' && option !== null && 'value' in option) {
+      const searchOption = option as { value?: string };
+      if (searchOption.value) {
+        router.push(searchOption.value);
+      }
     }
   };
 

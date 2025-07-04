@@ -3,6 +3,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
+interface DropdownProps {
+  options?: unknown[];
+  placeholder?: string;
+  onSelect?: (option: unknown) => void;
+  defaultValue?: string;
+  className?: string;
+  disabled?: boolean;
+}
+
 const Dropdown = ({
   options = [],
   placeholder = "เลือกตัวเลือก",
@@ -10,15 +19,15 @@ const Dropdown = ({
   defaultValue = "",
   className = "",
   disabled = false
-}) => {
+}: DropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(defaultValue || placeholder);
-  const dropdownRef = useRef(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // ปิด dropdown เมื่อคลิกนอกพื้นที่
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
@@ -37,8 +46,8 @@ const Dropdown = ({
   };
 
   // จัดการการเลือกตัวเลือก
-  const handleOptionSelect = (option) => {
-    const label = typeof option === 'object' ? option.label : option;
+  const handleOptionSelect = (option: unknown) => {
+    const label = typeof option === 'object' && option !== null ? (option as { label: string }).label : String(option);
     setSelectedOption(label);
     setIsOpen(false);
     onSelect(option);
@@ -83,9 +92,9 @@ const Dropdown = ({
               </div>
             ) : (
               options.map((option, index) => {
-                const isObject = typeof option === 'object';
-                const label = isObject ? option.label : option;
-                const icon = isObject ? option.icon : null;
+                const isObject = typeof option === 'object' && option !== null;
+                const label = isObject ? (option as { label: string }).label : String(option);
+                const icon = isObject ? (option as { icon?: string }).icon : null;
 
                 return (
                   <button
@@ -93,6 +102,7 @@ const Dropdown = ({
                     onClick={() => handleOptionSelect(option)}
                     className="w-full text-left px-4 py-3 hover:bg-blue-50 text-gray-700 transition-colors duration-150 flex items-center space-x-3 focus:outline-none focus:bg-blue-50 border-b border-gray-100 last:border-b-0"
                     role="option"
+                    aria-selected="false"
                   >
                     {icon && (
                       <span className="text-lg flex-shrink-0">{icon}</span>

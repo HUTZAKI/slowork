@@ -1,5 +1,19 @@
 // components/JobCard.jsx
-const JobCard = ({ job }) => {
+
+interface Job {
+  title?: string;
+  organizationType?: string;
+  jobCategory?: string;
+  province?: string;
+  salary?: string;
+  [key: string]: unknown;
+}
+
+interface JobCardProps {
+  job: Job;
+}
+
+const JobCard = ({ job }: JobCardProps) => {
     return (
       <div className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
         <div className="flex justify-between items-start mb-3">
