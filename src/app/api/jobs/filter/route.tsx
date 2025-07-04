@@ -1,14 +1,15 @@
 // app/api/jobs/filter/route.js
 
 import { NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { connectDB } from '../../../lib/mongoose';
 import Job from '../../../models/Jobs';
 
-export async function POST(req) {
+export async function POST(req: NextRequest) {
   await connectDB();
 
   const filters = await req.json();
-  const query = {};
+  const query: Record<string, unknown> = {};
 
   // Dropdown filters
   ['jobCategory', 'province', 'organizationType', 'workplace', 'workDays', 'salary'].forEach(field => {

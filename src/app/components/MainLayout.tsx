@@ -1,26 +1,28 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import HeaderMain from './HeaderMain';
 import JobFilterSidebar from './JobFilterSidebar';
 
-const MainLayout = ({ children }) => {
-  const [allJobs, setAllJobs] = useState([]);
-  const [filteredJobs, setFilteredJobs] = useState([]);
+interface MainLayoutProps {
+  children: (props: { filteredJobs: unknown[] }) => React.ReactNode;
+}
+
+const MainLayout = ({ children }: MainLayoutProps) => {
+  const [filteredJobs, setFilteredJobs] = useState<unknown[]>([]);
 
   // Load jobs on first mount
   useEffect(() => {
     const fetchJobs = async () => {
       const res = await fetch('/api/jobs');
       const data = await res.json();
-      setAllJobs(data);
       setFilteredJobs(data); // show all at first
     };
     fetchJobs();
   }, []);
 
   // Handle search from sidebar
-  const handleSearch = async (filters) => {
+  const handleSearch = async (filters: unknown) => {
     try {
       const res = await fetch('/api/jobs/filter', {
         method: 'POST',

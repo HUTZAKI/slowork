@@ -2,8 +2,36 @@
 
 import { useState } from 'react';
 
-const JobFilterSidebar = ({onSearch}) => {
-  const [filters, setFilters] = useState({
+interface BenefitsType {
+  socialSecurity: boolean;
+  bonus: boolean;
+  overtime: boolean;
+  commission: boolean;
+  transport: boolean;
+  food: boolean;
+  uniform: boolean;
+  fund: boolean;
+  accommodation: boolean;
+}
+
+interface FiltersType {
+  jobCategory: string;
+  province: string;
+  organizationType: string;
+  workplace: string;
+  workDays: string;
+  salary: string;
+  onlineInterview: boolean;
+  acceptNewGrad: boolean;
+  benefits: BenefitsType;
+}
+
+interface JobFilterSidebarProps {
+  onSearch: (filters: FiltersType) => void;
+}
+
+const JobFilterSidebar = ({onSearch}: JobFilterSidebarProps) => {
+  const [filters, setFilters] = useState<FiltersType>({
     jobCategory: '',
     province: '',
     organizationType: '',
@@ -79,22 +107,22 @@ const JobFilterSidebar = ({onSearch}) => {
   ];
 
   // Handle dropdown changes
-  const handleDropdownChange = (field, value) => {
+  const handleDropdownChange = (field: string, value: string) => {
     setFilters(prev => ({ ...prev, [field]: value }));
   };
 
   // Handle checkbox changes
-  const handleCheckboxChange = (field, nested = false) => {
+  const handleCheckboxChange = (field: string, nested = false) => {
     if (nested) {
       setFilters(prev => ({
         ...prev,
         benefits: {
           ...prev.benefits,
-          [field]: !prev.benefits[field]
+          [field as keyof BenefitsType]: !prev.benefits[field as keyof BenefitsType]
         }
       }));
     } else {
-      setFilters(prev => ({ ...prev, [field]: !prev[field] }));
+      setFilters(prev => ({ ...prev, [field]: !prev[field as keyof FiltersType] }));
     }
   };
 
@@ -152,7 +180,7 @@ const JobFilterSidebar = ({onSearch}) => {
                 {label}
               </label>
               <select
-                value={filters[field]}
+                value={filters[field as keyof FiltersType] as string}
                 onChange={(e) => handleDropdownChange(field, e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
               >
@@ -199,7 +227,7 @@ const JobFilterSidebar = ({onSearch}) => {
               <label key={key} className="flex items-center space-x-3 cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={filters.benefits[key]}
+                  checked={filters.benefits[key as keyof BenefitsType]}
                   onChange={() => handleCheckboxChange(key, true)}
                   className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                 />

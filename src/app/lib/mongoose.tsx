@@ -7,13 +7,22 @@ if (!MONGODB_URI) {
   throw new Error('Please define MONGODB_URI in your .env.local file');
 }
 
-let cached = global.mongoose || { conn: null, promise: null };
+interface CachedConnection {
+  conn: typeof mongoose | null;
+  promise: Promise<typeof mongoose> | null;
+}
+
+declare global {
+  var mongoose: CachedConnection | undefined;
+}
+
+const cached: CachedConnection = (globalThis as typeof globalThis & { mongoose?: CachedConnection }).mongoose || { conn: null, promise: null };
 
 export async function connectDB() {
   if (cached.conn) return cached.conn;
 
   if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URI, {
+    cached.promise = mongoose.connect(MONGODB_URI!, {
       bufferCommands: false,
     }).then((mongoose) => {
       console.log('✅ MongoDB connected');
@@ -26,5 +35,5 @@ export async function connectDB() {
 }
 
 if (process.env.NODE_ENV !== 'production') {
-  global.mongoose = cached;
+  (globalThis as typeof globalThis & { mongoose?: CachedConnection }).mongoose = cached;
 }
