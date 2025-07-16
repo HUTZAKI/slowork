@@ -3,15 +3,31 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import HeaderHome from '../components/HeaderHome';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
 
-  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('Logging in with:', { email, password });
+    setError('');
+
+    const result = await signIn('credentials', {
+      redirect: false,
+      email,
+      password,
+    });
+
+    if (result?.error) {
+      setError(result.error);
+    } else {
+      router.push('/testbar');
+    }
   };
 
   return (
@@ -34,6 +50,7 @@ const Login = () => {
 
             {/* Form */}
             <form onSubmit={handleLogin} className="px-8 py-8 space-y-6">
+              {error && <p className="text-red-500 text-center">{error}</p>}
               {/* Email Field */}
               <div className="space-y-2">
                 <label className="block text-sm font-semibold text-gray-700">
@@ -130,3 +147,63 @@ const Login = () => {
 };
 
 export default Login;
+
+// 'use client';
+
+// import { useState } from 'react';
+// import { signIn } from 'next-auth/react';
+// import { useRouter } from 'next/navigation';
+
+// export default function Login() {
+//   const [email, setEmail] = useState('');
+//   const [password, setPassword] = useState('');
+//   const [error, setError] = useState('');
+//   const router = useRouter();
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     setError('');
+
+//     const result = await signIn('credentials', {
+//       redirect: false,
+//       email,
+//       password,
+//     });
+
+//     if (result.error) {
+//       setError(result.error);
+//     } else {
+//       router.push('/');
+//     }
+//   };
+
+//   return (
+//     <div className="flex justify-center items-center h-screen">
+//       <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md">
+//         <h1 className="text-2xl mb-4">Login</h1>
+//         {error && <p className="text-red-500">{error}</p>}
+//         <div className="mb-4">
+//           <label>Email</label>
+//           <input
+//             type="email"
+//             value={email}
+//             onChange={(e) => setEmail(e.target.value)}
+//             className="w-full p-2 border rounded"
+//           />
+//         </div>
+//         <div className="mb-4">
+//           <label>Password</label>
+//           <input
+//             type="password"
+//             value={password}
+//             onChange={(e) => setPassword(e.target.value)}
+//             className="w-full p-2 border rounded"
+//           />
+//         </div>
+//         <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">
+//           Login
+//         </button>
+//       </form>
+//     </div>
+//   );
+// }

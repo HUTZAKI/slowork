@@ -8,6 +8,7 @@ export async function POST(req: NextRequest) {
   try {
     await connectDB();
     const body = await req.json();
+    console.log('[ADD JOBS BODY]', body);
 
     if (!Array.isArray(body)) {
       return NextResponse.json({ success: false, message: 'Expected an array of jobs' }, { status: 400 });

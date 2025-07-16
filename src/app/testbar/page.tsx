@@ -14,7 +14,7 @@ const TestbarPage = () => {
             เลือกตัวกรองจากด้านซ้ายเพื่อค้นหางานที่เหมาะสมกับคุณ
           </p>
 
-          <div className="space-y-4">
+          <div className=" grid grid-cols-2 gap-4">
             {filteredJobs.length === 0 ? (
               <p className="text-gray-500">ยังไม่มีงานที่ตรงกับตัวกรอง</p>
             ) : (

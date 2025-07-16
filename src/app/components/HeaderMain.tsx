@@ -3,9 +3,16 @@
 import Link from 'next/link';
 import Dropdown from './Dropdown';
 import { useRouter } from 'next/navigation';
+import { signOut, useSession } from 'next-auth/react';
 
 const HeaderMain = () => {
   const router = useRouter();
+  const { data: session } = useSession();
+
+  const handleLogout = async () => {
+    await signOut({ redirect: false });
+    router.push('/login');
+  };
 
   // ตัวเลือกการค้นหา
   const searchOptions = [
@@ -97,10 +104,35 @@ const HeaderMain = () => {
                 </Link>
               ))}
 
-              {/* Profile Button */}
-              <button className="ml-4 px-6 py-2 text-blue-600 font-medium border-2 border-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                Profile
-              </button>
+              {/* Profile/Auth Buttons */}
+              {session ? (
+                <>
+                  <Link href="/user/dashboard">
+                    <button className="ml-4 px-6 py-2 text-blue-600 font-medium border-2 border-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                      Profile
+                    </button>
+                  </Link>
+                  <button 
+                    onClick={handleLogout}
+                    className="ml-2 px-6 py-2 text-red-600 font-medium border-2 border-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link href="/login">
+                    <button className="ml-4 px-6 py-2 text-blue-600 font-medium border-2 border-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                      Login
+                    </button>
+                  </Link>
+                  <Link href="/register">
+                    <button className="ml-2 px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                      Register
+                    </button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
