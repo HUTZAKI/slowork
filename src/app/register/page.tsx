@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import HeaderHome from '../components/HeaderHome';
+import { useRouter } from 'next/navigation';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -12,21 +13,36 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [error, setError] = useState('');
+  const router = useRouter();
 
-  const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
-    if (password !== confirmPassword) {
-      alert('รหัสผ่านไม่ตรงกัน');
+    setError('');
+
+    if (!email || !password) {
+      setError('Email and password are required.');
       return;
     }
-    
-    if (!acceptTerms) {
-      alert('กรุณายอมรับเงื่อนไขการใช้งาน');
-      return;
+
+    try {
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      if (res.ok) {
+        router.push('/login');
+      } else {
+        const data = await res.json();
+        setError(data.message || 'Something went wrong.');
+      }
+    } catch (error) {
+      setError('Something went wrong.');
     }
-    
-    console.log('Registering with:', { name, email, password });
   };
 
   return (
@@ -192,3 +208,74 @@ const Register = () => {
 };
 
 export default Register;
+
+// 'use client';
+
+// import { useState } from 'react';
+// import { useRouter } from 'next/navigation';
+
+// export default function Register() {
+//   const [email, setEmail] = useState('');
+//   const [password, setPassword] = useState('');
+//   const [error, setError] = useState('');
+//   const router = useRouter();
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     setError('');
+
+//     if (!email || !password) {
+//       setError('Email and password are required.');
+//       return;
+//     }
+
+//     try {
+//       const res = await fetch('/api/register', {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({ email, password }),
+//       });
+
+//       if (res.ok) {
+//         router.push('/login');
+//       } else {
+//         const data = await res.json();
+//         setError(data.message || 'Something went wrong.');
+//       }
+//     } catch (error) {
+//       setError('Something went wrong.');
+//     }
+//   };
+
+//   return (
+//     <div className="flex justify-center items-center h-screen">
+//       <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md">
+//         <h1 className="text-2xl mb-4">Register</h1>
+//         {error && <p className="text-red-500">{error}</p>}
+//         <div className="mb-4">
+//           <label>Email</label>
+//           <input
+//             type="email"
+//             value={email}
+//             onChange={(e) => setEmail(e.target.value)}
+//             className="w-full p-2 border rounded"
+//           />
+//         </div>
+//         <div className="mb-4">
+//           <label>Password</label>
+//           <input
+//             type="password"
+//             value={password}
+//             onChange={(e) => setPassword(e.target.value)}
+//             className="w-full p-2 border rounded"
+//           />
+//         </div>
+//         <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">
+//           Register
+//         </button>
+//       </form>
+//     </div>
+//   );
+// }

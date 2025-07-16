@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import "./globals.css";
-import SessionProvider from "./components/SessionProvider";
+import "../globals.css";
+import UserLayout from "../components/UserLayout";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -13,10 +13,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
       <body className="antialiased">
-        <SessionProvider>{children}</SessionProvider>
+        <UserLayout>{children}</UserLayout>
       </body>
-    </html>
+
   );
 }
