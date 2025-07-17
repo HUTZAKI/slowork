@@ -11,7 +11,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       return NextResponse.json({ message: "User profile not found" }, { status: 404 });
     }
     return NextResponse.json(userProfile);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ message: "Internal server error" }, { status: 500 });
   }
 }
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       { upsert: true, new: true }
     );
     return NextResponse.json(userProfile);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ message: "Internal server error" }, { status: 500 });
   }
 }

@@ -40,7 +40,7 @@ const Register = () => {
         const data = await res.json();
         setError(data.message || 'Something went wrong.');
       }
-    } catch (error) {
+    } catch {
       setError('Something went wrong.');
     }
   };
@@ -65,6 +65,7 @@ const Register = () => {
 
             {/* Form */}
             <form onSubmit={handleRegister} className="px-8 py-8 space-y-5">
+              {error && <p className="text-red-500">{error}</p>}
               {/* Name Field */}
               <div className="space-y-2">
                 <label className="block text-sm font-semibold text-gray-700">

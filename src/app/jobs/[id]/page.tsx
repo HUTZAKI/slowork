@@ -4,9 +4,21 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import HeaderMain from '../../components/HeaderMain';
 
+interface Job {
+  title: string;
+  jobCategory: string;
+  jobDescription: string;
+  applicantQualifications: string;
+  salary: string;
+  welfareBenefit: string;
+  workplace: string;
+  numberOfWorkingDay: string;
+  contact: string;
+}
+
 const JobDetailsPage = () => {
   const { id } = useParams();
-  const [job, setJob] = useState<any>(null);
+  const [job, setJob] = useState<Job | null>(null);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -22,7 +34,7 @@ const JobDetailsPage = () => {
           const data = await res.json();
           setError(data.message || 'Something went wrong.');
         }
-      } catch (error) {
+      } catch {
         setError('Something went wrong.');
       }
     };
