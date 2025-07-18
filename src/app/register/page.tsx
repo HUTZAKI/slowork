@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import Link from 'next/link';
 import HeaderHome from '../components/HeaderHome';
 import { useRouter } from 'next/navigation';
@@ -14,7 +14,12 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [error, setError] = useState('');
+  const [role,setRole] = useState('');
   const router = useRouter();
+  
+  useEffect(()=>{
+    console.log(role);
+  },[role])
 
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -119,6 +124,7 @@ const Register = () => {
                   </button>
                 </div>
               </div>
+  
 
               {/* Confirm Password Field */}
               <div className="space-y-2">
@@ -142,6 +148,16 @@ const Register = () => {
                     {showConfirmPassword ? '🙈' : '👁️'}
                   </button>
                 </div>
+              </div>
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-gray-700">
+                    เลือกบทบาท
+                  </label>
+                <select className="select select-neutral " value={role} onChange={(e)=>setRole(e.target.value)}>
+                  <option disabled={true} value="">เลือก</option>
+                  <option value="user">ผู้ใช้งาน</option>
+                  <option value="Company">บริษัท</option>
+                </select>
               </div>
 
               {/* Terms Checkbox */}

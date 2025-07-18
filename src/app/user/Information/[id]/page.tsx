@@ -1,8 +1,7 @@
-"use client";
-
+'use client'
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
+import useAuth from "@/app/hooks/useAuth";
 
 interface UserProfile {
   personalInfo?: {
@@ -31,7 +30,7 @@ interface UserProfile {
 }
 
 export default function InformationPage() {
-  const { data: session } = useSession();
+  const { isAuthenticated } = useAuth();
   const params = useParams();
   const userId = Array.isArray(params.id) ? params.id[0] : params.id;
 
@@ -40,20 +39,22 @@ export default function InformationPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [file, setFile] = useState<File | null>(null);
+
   useEffect(() => {
-    if (session && userId) {
+    if (isAuthenticated && userId) {
       fetch(`/api/user/information/${userId}`)
         .then((res) => res.json())
         .then((data) => {
           setProfile(data);
           setLoading(false);
         })
-        .catch((err) => {
+        .catch(() => {
           setError("Failed to load user data.");
           setLoading(false);
         });
     }
-  }, [session, userId]);
+  }, [isAuthenticated, userId]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -62,8 +63,8 @@ export default function InformationPage() {
     const keys = name.split(".");
 
     setProfile((prev) => {
-      const updated = { ...prev } as any;
-      let current = updated;
+      const updated: UserProfile = { ...prev as UserProfile };
+      let current: { [key: string]: any } = updated;
 
       for (let i = 0; i < keys.length - 1; i++) {
         if (!current[keys[i]]) current[keys[i]] = {};
@@ -77,15 +78,22 @@ export default function InformationPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
+      const formData = new FormData();
+      formData.append('profileData', JSON.stringify(profile));
+      if (file) {
+        formData.append('resume', file);
+      }
+
       const res = await fetch(`/api/user/information/${userId}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(profile),
+        body: formData,
       });
       const data = await res.json();
       setProfile(data);
+      alert("Profile saved successfully!");
     } catch (err) {
-      alert("Failed to save.");
+      console.error("Failed to save profile:", err);
+      alert("Failed to save profile.");
     }
     setSaving(false);
   };
@@ -125,11 +133,15 @@ export default function InformationPage() {
       </Section>
 
       {/* Resume Section */}
+
       <Section title="Resume">
         <Grid>
-          <Input name="resume.url" value={profile.resume?.url} onChange={handleInputChange} placeholder="Resume URL" />
-          <Input name="resume.fileName" value={profile.resume?.fileName} onChange={handleInputChange} placeholder="File Name" />
-          <Input type="date" name="resume.uploadDate" value={profile.resume?.uploadDate?.split("T")[0]} onChange={handleInputChange} placeholder="Upload Date" />
+          <input type="file" accept="application/pdf" onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)} className="file-input file-input-bordered w-full" />
+          {profile?.resume?.url && (
+            <p className="text-sm text-gray-600">
+              Current Resume: <a href={profile.resume.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">{profile.resume.fileName || "View Resume"}</a>
+            </p>
+          )}
         </Grid>
       </Section>
 

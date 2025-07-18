@@ -1,10 +1,9 @@
 "use client";
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
+import useAuth from '@/app/hooks/useAuth';
 
 const ProfileSidebar = () => {
-  const { data: session } = useSession();
-  const userId = session?.user?.id;
+  const { userId } = useAuth();
 
   return (
     <aside className="w-64 bg-white shadow-md border-r border-gray-200 h-full p-6 space-y-4">

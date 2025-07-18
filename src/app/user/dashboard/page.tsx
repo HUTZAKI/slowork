@@ -1,8 +1,7 @@
-"use client"
-import { useSession } from "next-auth/react";
+// "use client"
+import Image from "next/image";
 
 export default function Dashboard() {
-  const { data: session } = useSession();
 
   return (
     <div className="grid grid-cols-2 bg-red-100 p-9 justify-items-center gap-y-2">
@@ -48,7 +47,7 @@ export default function Dashboard() {
   <figure>
     <img
       src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
-      alt="Shoes" />
+      alt="Shoes" width={400} height={225} />
   </figure>
   <div className="card-body">
     <h2 className="card-title">Card Title</h2>

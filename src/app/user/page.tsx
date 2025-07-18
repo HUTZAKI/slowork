@@ -1,5 +1,3 @@
-import UserLayout from "../components/UserLayout";
-
 const User = () => {
     return (
             <div className="flex p-10">

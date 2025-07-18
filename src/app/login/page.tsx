@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import HeaderHome from '../components/HeaderHome';
-import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
 const Login = () => {
@@ -11,22 +10,31 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [role,setRole] = useState('');
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
 
-    const result = await signIn('credentials', {
-      redirect: false,
-      email,
-      password,
-    });
+    try {
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (result?.error) {
-      setError(result.error);
-    } else {
-      router.push('/testbar');
+      if (res.ok) {
+        router.push('/testbar');
+      } else {
+        const data = await res.json();
+        setError(data.message || 'Login failed.');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setError('An unexpected error occurred.');
     }
   };
 
@@ -88,6 +96,16 @@ const Login = () => {
                     {showPassword ? '🙈' : '👁️'}
                   </button>
                 </div>
+              </div>
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-gray-700">
+                    เลือกบทบาท
+                  </label>
+                <select className="select select-neutral " value={role} onChange={(e)=>setRole(e.target.value)}>
+                  <option disabled={true} value="">เลือก</option>
+                  <option value="user">ผู้ใช้งาน</option>
+                  <option value="Company">บริษัท</option>
+                </select>
               </div>
 
               {/* Forgot Password */}

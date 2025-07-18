@@ -3,15 +3,14 @@
 import Link from 'next/link';
 import Dropdown from './Dropdown';
 import { useRouter } from 'next/navigation';
-import { signOut, useSession } from 'next-auth/react';
+import useAuth from '../hooks/useAuth';
 
 const HeaderMain = () => {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { isAuthenticated, logout, userId } = useAuth();
 
   const handleLogout = async () => {
-    await signOut({ redirect: false });
-    router.push('/login');
+    await logout();
   };
 
   // ตัวเลือกการค้นหา
@@ -105,9 +104,9 @@ const HeaderMain = () => {
               ))}
 
               {/* Profile/Auth Buttons */}
-              {session ? (
+              {isAuthenticated ? (
                 <>
-                  <Link href="/user/dashboard">
+                  <Link href={userId ? `/user/dashboard/${userId}` : '/login'}>
                     <button className="ml-4 px-6 py-2 text-blue-600 font-medium border-2 border-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                       Profile
                     </button>
