@@ -17,13 +17,18 @@ const Login = () => {
     e.preventDefault();
     setError('');
 
+    if (!role) {
+      setError('Please select a role.');
+      return;
+    }
+
     try {
       const res = await fetch('/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, role}),
       });
 
       if (res.ok) {
@@ -101,7 +106,7 @@ const Login = () => {
                 <label className="block text-sm font-semibold text-gray-700">
                     เลือกบทบาท
                   </label>
-                <select className="select select-neutral " value={role} onChange={(e)=>setRole(e.target.value)}>
+                <select className="select select-neutral w-full" value={role} onChange={(e)=>setRole(e.target.value)} required>
                   <option disabled={true} value="">เลือก</option>
                   <option value="user">ผู้ใช้งาน</option>
                   <option value="Company">บริษัท</option>

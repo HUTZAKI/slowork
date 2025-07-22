@@ -1,11 +1,30 @@
 
 import mongoose, { Schema } from "mongoose";
 
+const detailSchema = new Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  role: {
+    type: [String],
+    required: true,
+  },
+  phoneNumber: {
+    type: String,
+    required: true,
+  },
+  university: {
+    type: String,
+    required: true,
+  },
+});
+
 const userSchema = new Schema(
   {
-    name: {
-      type: String,
-      required: true,
+    userID: {
+      type: Number,
+      unique: true,
     },
     email: {
       type: String,
@@ -15,6 +34,16 @@ const userSchema = new Schema(
     },
     password: {
       type: String,
+      required: true,
+    },
+    resume: {
+      type: String,
+    },
+    files: {
+      type: [String],
+    },
+    detail: {
+      type: detailSchema,
       required: true,
     },
   },

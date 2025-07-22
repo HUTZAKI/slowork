@@ -7,12 +7,15 @@ import jwt from "jsonwebtoken";
 export async function POST(req: Request) {
   try {
     await connectDB();
-    const { email, password } = await req.json();
+    const { email, password, role} = await req.json();
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ 
+      email,
+      "detail.role": role 
+    });
 
     if (!user) {
-      return NextResponse.json({ message: "Invalid credentials" }, { status: 401 });
+      return NextResponse.json({ message: "Invalid credentials or role" }, { status: 401 });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);

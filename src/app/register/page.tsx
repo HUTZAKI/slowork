@@ -1,42 +1,62 @@
 'use client';
 
-import { useState,useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import HeaderHome from '../components/HeaderHome';
 import { useRouter } from 'next/navigation';
 
+interface DetailState {
+  name: string;
+  role: string[];
+  phoneNumber: string;
+  university: string;
+}
+
 const Register = () => {
-  const [name, setName] = useState('');
+  // const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [detail, setDetail] = useState<DetailState>({
+    name: '',
+    role: [''],
+    phoneNumber: '',
+    university: '',
+  });
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [error, setError] = useState('');
-  const [role,setRole] = useState('');
   const router = useRouter();
-  
-  useEffect(()=>{
-    console.log(role);
-  },[role])
 
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
 
-    if (!email || !password) {
-      setError('Email and password are required.');
+    if ( !detail.name|| !email || !password || !confirmPassword || !detail.phoneNumber || !detail.university || !detail.role) {
+      setError('All fields are required.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+
+    if (!acceptTerms) {
+      setError('You must accept the terms and privacy policy.');
       return;
     }
 
     try {
+      console.log(JSON.stringify({ email, password, detail: { ...detail } }));
       const res = await fetch('/api/register', {
         method: 'POST',
+        credentials: "include",
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ email, password, detail: { ...detail } }),
       });
 
       if (res.ok) {
@@ -45,7 +65,8 @@ const Register = () => {
         const data = await res.json();
         setError(data.message || 'Something went wrong.');
       }
-    } catch {
+    } catch (err) {
+      console.error('Registration error:', err);
       setError('Something went wrong.');
     }
   };
@@ -79,12 +100,40 @@ const Register = () => {
                 <input
                   type="text"
                   placeholder="กรอกชื่อและนามสกุลของคุณ"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  value={detail.name}
+                  onChange={(e) => setDetail({...detail,name:e.target.value})}
                   required
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 placeholder-gray-400"
                 />
               </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-gray-700">
+                  เบอร์โทรศัพทร์
+                </label>
+                <input
+                  type="text"
+                  placeholder="กรอกเบอร์โทรของคุณ"
+                  value={detail.phoneNumber}
+                  onChange={(e) => setDetail({...detail, phoneNumber: e.target.value})}
+                  required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 placeholder-gray-400"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-gray-700">
+                  มหาวิทยาลัย
+                </label>
+                <input
+                  type="text"
+                  placeholder="กรอกเบอร์โทรของคุณ"
+                  value={detail.university}
+                  onChange={(e) => setDetail({...detail, university: e.target.value})}
+                  required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 placeholder-gray-400"
+                />
+              </div>
+
 
               {/* Email Field */}
               <div className="space-y-2">
@@ -153,7 +202,8 @@ const Register = () => {
                 <label className="block text-sm font-semibold text-gray-700">
                     เลือกบทบาท
                   </label>
-                <select className="select select-neutral " value={role} onChange={(e)=>setRole(e.target.value)}>
+                <select className="select select-neutral w-full" value={detail.role[0] || ''} onChange={(e) => setDetail({ ...detail, role: [e.target.value] })}
+>
                   <option disabled={true} value="">เลือก</option>
                   <option value="user">ผู้ใช้งาน</option>
                   <option value="Company">บริษัท</option>
